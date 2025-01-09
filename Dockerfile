@@ -1,8 +1,13 @@
-# Utilizando uma imagem base mínima com scratch para reduzir o tamanho final
+FROM golang:1.20 AS builder
+
+WORKDIR /app
+
+COPY main.go .
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main main.go
+
 FROM scratch
 
-# Adicionando o binário compilado diretamente na imagem
-COPY main /main
+COPY --from=builder /app/main /main
 
-# Executando o binário ao rodar o container
 ENTRYPOINT ["/main"]
